@@ -21,13 +21,13 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
 import CustomTableHead from './CustomTableHead';
 import CustomTableToolbar from './CustomTableToolbar';
@@ -40,10 +40,18 @@ import CustomTableToolbar from './CustomTableToolbar';
  * @return {number}
  * */
 function desc(a, b, orderBy) {
-    if (b[orderBy] < a[orderBy]) {
+    let tempa = a[orderBy];
+    let tempb = b[orderBy];
+
+    if (typeof (tempa) === 'string') {
+        tempa = tempa.toLowerCase();
+        tempb = tempb.toLowerCase();
+    }
+
+    if (tempb < tempa) {
         return -1;
     }
-    if (b[orderBy] > a[orderBy]) {
+    if (tempb > tempa) {
         return 1;
     }
     return 0;
@@ -106,7 +114,7 @@ const styles = theme => ({
         flexShrink: 0,
     },
     paginationSelectRoot: {
-        marginRight: '10px',
+        marginRight: 10,
     },
     paginationSelect: {
         paddingLeft: 8,
@@ -229,10 +237,9 @@ class CustomTable extends React.Component {
                                     <div className={classes.tableWrapper}>
                                         <Table className={classes.table} aria-labelledby='tableTitle'>
                                             <colgroup>
+                                                <col style={{ width: '40%' }} />
                                                 <col style={{ width: '30%' }} />
-                                                <col style={{ width: '20%' }} />
                                                 <col style={{ width: '30%' }} />
-                                                <col style={{ width: '20%' }} />
                                             </colgroup>
                                             <CustomTableHead
                                                 order={order}
@@ -255,9 +262,6 @@ class CustomTable extends React.Component {
                                                                 <TableCell component='th' scope='row'>
                                                                     {n.version}
                                                                 </TableCell>
-                                                                <TableCell component='th' scope='row'>
-                                                                    {n.applicationName}
-                                                                </TableCell>
                                                                 <TableCell component='th' scope='row' numeric>
                                                                     {n.usage}
                                                                 </TableCell>
@@ -267,7 +271,7 @@ class CustomTable extends React.Component {
                                                 {
                                                     emptyRows > 0 && (
                                                         <TableRow style={{ height: emptyRowHeight * emptyRows }}>
-                                                            <TableCell colSpan={4} />
+                                                            <TableCell colSpan={3} />
                                                         </TableRow>
                                                     )
                                                 }
@@ -276,7 +280,7 @@ class CustomTable extends React.Component {
                                                 <TableRow>
                                                     <TablePagination
                                                         rowsPerPageOptions={[5, 10, 20, 25, 50, 100]}
-                                                        colSpan={4}
+                                                        colSpan={3}
                                                         count={tableData.length}
                                                         rowsPerPage={rowsPerPage}
                                                         page={page}
