@@ -19,14 +19,19 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { FormattedMessage } from 'react-intl';
 import { Scrollbars } from 'react-custom-scrollbars';
+import { FormattedMessage } from 'react-intl';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import FormControl from '@material-ui/core/FormControl';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import InputLabel from '@material-ui/core/InputLabel';
 import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import Paper from '@material-ui/core/Paper';
+import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import sumBy from 'lodash/sumBy';
+import { VictoryPie, VictoryLegend, VictoryTooltip } from 'victory';
 import CustomTable from './CustomTable';
 
 /**
@@ -36,8 +41,8 @@ import CustomTable from './CustomTable';
  */
 export default function APIMApplicationApiUsage(props) {
     const {
-        themeName, height, limit, apiCreatedBy, apiSelected, apiVersion, usageData, apiList, versionList,
-        apiCreatedHandleChange, apiSelectedHandleChange, apiVersionHandleChange, handleLimitChange, inProgress,
+        themeName, height, width, limit, applicationSelected, usageData, legendData, applicationList,
+        applicationSelectedHandleChange, handleLimitChange, inProgress,
     } = props;
     const styles = {
         headingWrapper: {
@@ -61,32 +66,45 @@ export default function APIMApplicationApiUsage(props) {
             height: '10%',
             margin: 'auto',
         },
-        form: {
+        gridWrapper: {
+            marginLeft: '5%',
+        },
+        formControl: {
+            marginTop: '5%',
+            marginLeft: '5%',
+        },
+        textField: {
+            marginTop: 0,
+            minWidth: 120,
+            width: '30%',
+        },
+        select: {
+            paddingTop: 5,
+            marginTop: 10,
+            minWidth: 300,
+        },
+        inProgress: {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height,
+        },
+        statDiv: {
             display: 'flex',
             flexWrap: 'wrap',
         },
-        formControl: {
-            margin: '5%',
-            minWidth: 120,
+        pieDiv: {
+            width: width > 1000 ? '50%' : '100%',
+            paddingTop: 30,
         },
-        textField: {
-            margin: '5%',
-            marginTop: 0,
-            minWidth: 120,
-        },
-        selectEmpty: {
-            marginTop: 10,
+        tableDiv: {
+            width: width > 1000 ? '50%' : '100%',
         },
     };
 
     return (
-        <Scrollbars
-            style={{ height }}
-        >
-            <div style={{
-                padding: '5% 5%',
-            }}
-            >
+        <Scrollbars style={{ height }}>
+            <div style={{ padding: '5% 5%' }}>
                 <div style={styles.headingWrapper}>
                     <h3 style={{
                         borderBottom: themeName === 'dark' ? '1px solid #fff' : '1px solid #02212f',
@@ -102,91 +120,136 @@ export default function APIMApplicationApiUsage(props) {
                     </h3>
                 </div>
                 <div style={styles.formWrapper}>
-                    <form style={styles.form}>
-                        <FormControl style={styles.formControl}>
-                            <InputLabel shrink htmlFor='api-createdBy-label-placeholder'>
-                                <FormattedMessage id='createdBy.label' defaultMessage='API Created By' />
-                            </InputLabel>
-                            <Select
-                                value={apiCreatedBy}
-                                onChange={apiCreatedHandleChange}
-                                input={<Input name='apiCreatedBy' id='api-createdBy-label-placeholder' />}
-                                displayEmpty
-                                name='apiCreatedBy'
-                                style={styles.selectEmpty}
-                            >
-                                <MenuItem value='All'>
-                                    <FormattedMessage id='menuItem.all' defaultMessage='All' />
-                                </MenuItem>
-                                <MenuItem value='Me'>
-                                    <FormattedMessage id='menuItem.me' defaultMessage='Me' />
-                                </MenuItem>
-                            </Select>
-                        </FormControl>
-                        <FormControl style={styles.formControl}>
-                            <InputLabel shrink htmlFor='apiSelected-label-placeholder'>
-                                <FormattedMessage id='apiName.label' defaultMessage='API Name' />
-                            </InputLabel>
-                            <Select
-                                value={apiSelected}
-                                onChange={apiSelectedHandleChange}
-                                input={<Input name='apiSelected' id='apiSelected-label-placeholder' />}
-                                displayEmpty
-                                name='apiSelected'
-                                style={styles.selectEmpty}
-                            >
-                                {
-                                    apiList.map(option => (
-                                        <MenuItem key={option} value={option}>
-                                            {option}
-                                        </MenuItem>
-                                    ))
-                                }
-                            </Select>
-                        </FormControl>
-                        <FormControl style={styles.formControl}>
-                            <InputLabel shrink htmlFor='apiVersion-label-placeholder'>
-                                <FormattedMessage id='apiVersion.label' defaultMessage='API Version' />
-                            </InputLabel>
-                            <Select
-                                value={apiVersion}
-                                onChange={apiVersionHandleChange}
-                                input={<Input name='apiVersion' id='apiVersion-label-placeholder' />}
-                                displayEmpty
-                                name='apiVersion'
-                                style={styles.selectEmpty}
-                            >
-                                {
-                                    versionList.map(option => (
-                                        <MenuItem key={option} value={option}>
-                                            {option}
-                                        </MenuItem>
-                                    ))
-                                }
-                            </Select>
-                        </FormControl>
-                    </form>
-                </div>
-                <div style={styles.formWrapper}>
                     <form style={styles.form} noValidate autoComplete='off'>
-                        <TextField
-                            id='limit-number'
-                            label={<FormattedMessage id='limit' defaultMessage='Limit :' />}
-                            value={limit}
-                            onChange={handleLimitChange}
-                            type='number'
-                            style={styles.textField}
-                            InputLabelProps={{
-                                shrink: true,
-                            }}
-                            margin='normal'
-                        />
+                        <FormControl style={styles.formControl}>
+                            <InputLabel shrink htmlFor='applicationSelected-label-placeholder'>
+                                <FormattedMessage id='applicationName.label' defaultMessage='Application Name' />
+                            </InputLabel>
+                            <Select
+                                value={applicationSelected}
+                                onChange={applicationSelectedHandleChange}
+                                input={(
+                                    <Input
+                                        name='applicationSelected'
+                                        id='applicationSelected-label-placeholder'
+                                    />
+                                )}
+                                displayEmpty
+                                name='applicationSelected'
+                                style={styles.select}
+                            >
+                                {
+                                    applicationList.map(option => (
+                                        <MenuItem key={option.appId} value={option.appId}>
+                                            {option.appName}
+                                        </MenuItem>
+                                    ))
+                                }
+                            </Select>
+                        </FormControl>
+                        <FormControl style={styles.formControl}>
+                            <TextField
+                                id='limit-number'
+                                label={<FormattedMessage id='limit' defaultMessage='Limit :' />}
+                                value={limit}
+                                onChange={handleLimitChange}
+                                type='number'
+                                style={styles.textField}
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                                margin='normal'
+                            />
+                        </FormControl>
                     </form>
                 </div>
-                <CustomTable
-                    data={usageData}
-                    inProgress={inProgress}
-                />
+                { inProgress ? (
+                    <div style={styles.inProgress}>
+                        <CircularProgress />
+                    </div>
+                ) : (
+                    <div>
+                        { usageData.length > 0 ? (
+                            <div style={styles.statDiv}>
+                                <div style={styles.pieDiv}>
+                                    <svg viewBox='-50 0 1000 500'>
+                                        <VictoryPie
+                                            labelComponent={(
+                                                <VictoryTooltip
+                                                    orientation='right'
+                                                    pointerLength={0}
+                                                    cornerRadius={2}
+                                                    flyoutStyle={{
+                                                        fill: '#000',
+                                                        fillOpacity: '0.5',
+                                                        strokeWidth: 1,
+                                                    }}
+                                                    style={{ fill: '#fff', fontSize: 25 }}
+                                                />
+                                            )}
+                                            width={500}
+                                            height={500}
+                                            standalone={false}
+                                            padding={{
+                                                left: 50, bottom: 50, top: 50, right: 50,
+                                            }}
+                                            colorScale={['#385dbd', '#030d8a', '#59057b', '#ab0e86', '#e01171',
+                                                '#ffe2ff']}
+                                            data={usageData}
+                                            x={d => d.apiName}
+                                            y={d => d.usage}
+                                            labels={d => `${d.apiName} : ${((d.usage
+                                                / (sumBy(usageData, o => o.usage))) * 100).toFixed(2)}%`}
+                                        />
+                                        <VictoryLegend
+                                            standalone={false}
+                                            colorScale={['#385dbd', '#030d8a', '#59057b', '#ab0e86', '#e01171',
+                                                '#ffe2ff']}
+                                            x={500}
+                                            y={20}
+                                            gutter={20}
+                                            rowGutter={{ top: 0, bottom: -10 }}
+                                            style={{
+                                                labels: {
+                                                    fill: '#9e9e9e',
+                                                    fontSize: 25,
+                                                },
+                                            }}
+                                            data={legendData}
+                                        />
+                                    </svg>
+                                </div>
+                                <div style={styles.tableDiv}>
+                                    <CustomTable
+                                        data={usageData}
+                                        inProgress={inProgress}
+                                    />
+                                </div>
+                            </div>
+                        ) : (
+                            <div style={styles.paperWrapper}>
+                                <Paper
+                                    elevation={1}
+                                    style={styles.paper}
+                                >
+                                    <Typography variant='h5' component='h3'>
+                                        <FormattedMessage
+                                            id='nodata.error.heading'
+                                            defaultMessage='No Data Available !'
+                                        />
+                                    </Typography>
+                                    <Typography component='p'>
+                                        <FormattedMessage
+                                            id='nodata.error.body'
+                                            defaultMessage='No data available for the selected options.'
+                                        />
+                                    </Typography>
+                                </Paper>
+                            </div>
+                        )
+                        }
+                    </div>
+                )}
             </div>
         </Scrollbars>
     );
@@ -195,16 +258,13 @@ export default function APIMApplicationApiUsage(props) {
 APIMApplicationApiUsage.propTypes = {
     themeName: PropTypes.string.isRequired,
     height: PropTypes.string.isRequired,
+    width: PropTypes.string.isRequired,
     limit: PropTypes.string.isRequired,
-    apiCreatedBy: PropTypes.string.isRequired,
-    apiSelected: PropTypes.string.isRequired,
-    apiVersion: PropTypes.string.isRequired,
-    apiList: PropTypes.instanceOf(Object).isRequired,
-    versionList: PropTypes.instanceOf(Object).isRequired,
+    applicationSelected: PropTypes.string.isRequired,
+    applicationList: PropTypes.instanceOf(Object).isRequired,
     usageData: PropTypes.instanceOf(Object).isRequired,
-    apiCreatedHandleChange: PropTypes.func.isRequired,
-    apiSelectedHandleChange: PropTypes.func.isRequired,
-    apiVersionHandleChange: PropTypes.func.isRequired,
+    legendData: PropTypes.string.isRequired,
+    applicationSelectedHandleChange: PropTypes.func.isRequired,
     handleLimitChange: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,
 };

@@ -20,14 +20,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
-import FilterListIcon from '@material-ui/icons/FilterList';
-import TextField from '@material-ui/core/TextField';
-import MenuItem from '@material-ui/core/MenuItem';
 import Collapse from '@material-ui/core/Collapse';
+import FilterListIcon from '@material-ui/icons/FilterList';
+import IconButton from '@material-ui/core/IconButton';
+import MenuItem from '@material-ui/core/MenuItem';
+import Toolbar from '@material-ui/core/Toolbar';
+import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
+import TextField from '@material-ui/core/TextField';
 import { withStyles } from '@material-ui/core/styles';
 
 const styles = theme => ({
@@ -111,9 +111,6 @@ function CustomTableToolbar(props) {
                         </MenuItem>
                         <MenuItem value='version'>
                             <FormattedMessage id='table.heading.version' defaultMessage='VERSION' />
-                        </MenuItem>
-                        <MenuItem value='applicationName'>
-                            <FormattedMessage id='table.heading.applicationName' defaultMessage='APPLICATION NAME' />
                         </MenuItem>
                         <MenuItem value='usage'>
                             <FormattedMessage id='table.heading.usage' defaultMessage='USAGE' />

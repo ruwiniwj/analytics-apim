@@ -23,8 +23,8 @@ import { FormattedMessage } from 'react-intl';
 import TableHead from '@material-ui/core/TableHead';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
-import Tooltip from '@material-ui/core/Tooltip';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
+import Tooltip from '@material-ui/core/Tooltip';
 
 const rows = [
     {
@@ -32,9 +32,6 @@ const rows = [
     },
     {
         id: 'version', numeric: false, disablePadding: false, label: 'table.heading.version',
-    },
-    {
-        id: 'applicationName', numeric: false, disablePadding: false, label: 'table.heading.applicationName',
     },
     {
         id: 'usage', numeric: true, disablePadding: false, label: 'table.heading.usage',
