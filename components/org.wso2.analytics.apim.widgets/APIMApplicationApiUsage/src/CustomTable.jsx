@@ -257,7 +257,7 @@ class CustomTable extends React.Component {
                                                                 key={n.id}
                                                             >
                                                                 <TableCell component='th' scope='row'>
-                                                                    {n.apiName}
+                                                                    {n.apiName + ' (' + n.apiCreator + ')'}
                                                                 </TableCell>
                                                                 <TableCell component='th' scope='row'>
                                                                     {n.version}

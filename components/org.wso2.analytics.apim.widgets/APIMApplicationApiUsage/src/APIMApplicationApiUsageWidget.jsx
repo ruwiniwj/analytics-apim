@@ -67,6 +67,25 @@ const language = (navigator.languages && navigator.languages[0]) || navigator.la
 const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
 
 /**
+ * Compare two values and return the result
+ * @param {object} a - data field
+ * @param {object} b - data field
+ * @return {number}
+ * */
+function sortFunction(a, b) {
+    const nameA = a.appName.toLowerCase();
+    const nameB = b.appName.toLowerCase();
+
+    if (nameA < nameB) {
+        return -1;
+    }
+    if (nameA > nameB) {
+        return 1;
+    }
+    return 0;
+}
+
+/**
  * Create React Component for APIM Application Api Usage widget
  * @class APIMApplicationApiUsageWidget
  * @extends {Widget}
@@ -111,6 +130,7 @@ class APIMApplicationApiUsageWidget extends Widget {
             legendData: null,
             localeMessages: null,
             inProgress: false,
+            refreshAppListInterval: 60000,
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -122,20 +142,29 @@ class APIMApplicationApiUsageWidget extends Widget {
         }
 
         this.handleDataReceived = this.handleDataReceived.bind(this);
+        this.handleAppDataReceived = this.handleAppDataReceived.bind(this);
         this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
         this.applicationSelectedHandleChange = this.applicationSelectedHandleChange.bind(this);
         this.handleLimitChange = this.handleLimitChange.bind(this);
-        this.getApplicationList = this.getApplicationList.bind(this);
         this.assembleMainQuery = this.assembleMainQuery.bind(this);
+        this.assembleAppQuery = this.assembleAppQuery.bind(this);
         this.loadLocale = this.loadLocale.bind(this);
     }
 
     componentDidMount() {
-        const { widgetID } = this.props;
+        const { widgetID, id } = this.props;
+        const { refreshAppListInterval } = this.state;
         const locale = languageWithoutRegionCode || language;
+
         this.loadLocale(locale);
         super.getWidgetConfiguration(widgetID)
             .then((message) => {
+                // set an interval to periodically retrieve the application list
+                const refreshApplicationList = () => {
+                    super.getWidgetChannelManager().unsubscribeWidget(id);
+                    this.assembleAppQuery();
+                };
+                setInterval(refreshApplicationList, refreshAppListInterval);
                 this.setState({
                     providerConfig: message.data.configs.providerConfig,
                 }, () => super.subscribe(this.handlePublisherParameters));
@@ -179,32 +208,11 @@ class APIMApplicationApiUsageWidget extends Widget {
             timeTo: receivedMsg.to,
             perValue: receivedMsg.granularity,
             inProgress: true,
-        }, this.getApplicationList);
+        }, this.assembleAppQuery);
     }
 
     /**
-     * Formats the siddhi query - apiListQuery
-     * @memberof APIMApplicationApiUsageWidget
-     * */
-    getApplicationList() {
-        //todo get appliction list from store API
-        const applicationList = [];
-        const queryParam = super.getGlobalState(queryParamKey);
-        let { applicationSelected, limit } = queryParam;
-        if (!limit) {
-            limit = 5;
-        }
-        if (!applicationSelected || !applicationList.some(application => application.appId === applicationSelected)) {
-            if (applicationList.length > 0) {
-                applicationSelected = applicationList[0].appId;
-            }
-        }
-        this.setQueryParam(applicationSelected, limit);
-        this.setState({ applicationList, applicationSelected, limit }, this.assembleMainQuery);
-    }
-
-    /**
-     * Formats the siddhi query - mainquery
+     * Formats the siddhi query - apiUsageQuery
      * @memberof APIMApplicationApiUsageWidget
      * */
     assembleMainQuery() {
@@ -228,6 +236,63 @@ class APIMApplicationApiUsageWidget extends Widget {
     }
 
     /**
+     * Formats the siddhi query - applicationQuery
+     * @memberof APIMApplicationApiUsageWidget
+     * */
+    assembleAppQuery() {
+        const { providerConfig } = this.state;
+        const { id } = this.props;
+        const dataProviderConfigs = cloneDeep(providerConfig);
+        let query = dataProviderConfigs.configs.config.queryData.applicationQuery;
+        const currentUser = super.getCurrentUser();
+        let userName = currentUser.username;
+
+        // if email username is enabled, then super tenants will be saved with '@carbon.super' suffix, else, they
+        // are saved without tenant suffix
+        if (userName.split('@').length === 2) {
+            userName = userName.replace('@carbon.super', '');
+        }
+
+        query = query.replace('{{appOwner}}', userName);
+        dataProviderConfigs.configs.config.queryData.query = query;
+        super.getWidgetChannelManager().subscribeWidget(id, this.handleAppDataReceived, dataProviderConfigs);
+    }
+
+    /**
+     * Formats data retrieved from assembleAppQuery
+     * @param {object} message - data retrieved
+     * @memberof APIMApplicationApiUsageWidget
+     * */
+    handleAppDataReceived(message) {
+        const { data } = message;
+        const { id } = this.props;
+
+        if (data) {
+            const queryParam = super.getGlobalState(queryParamKey);
+            let { applicationSelected, limit } = queryParam;
+            if (!limit) {
+                limit = 5;
+            }
+            const applicationList = data.map((dataUnit) => {
+                return {
+                    appId: dataUnit[0],
+                    appName: dataUnit[1],
+                };
+            });
+            applicationList.sort(sortFunction);
+
+            if (!applicationSelected || !data.some(application => application.appId === applicationSelected)) {
+                if (applicationList.length > 0) {
+                    applicationSelected = applicationList[0].appId;
+                }
+            }
+            this.setQueryParam(applicationSelected, limit);
+            super.getWidgetChannelManager().unsubscribeWidget(id);
+            this.setState({ applicationList, applicationSelected, limit }, this.assembleMainQuery);
+        }
+    }
+
+    /**
      * Formats data retrieved from assembleMainQuery
      * @param {object} message - data retrieved
      * @memberof APIMApplicationApiUsageWidget
@@ -240,7 +305,8 @@ class APIMApplicationApiUsageWidget extends Widget {
                 return {
                     apiName: dataUnit[0],
                     version: dataUnit[1],
-                    usage: dataUnit[2],
+                    apiCreator: dataUnit[2],
+                    usage: dataUnit[3],
                 };
             });
             const legendData = usageData.map((dataUnit) => {
