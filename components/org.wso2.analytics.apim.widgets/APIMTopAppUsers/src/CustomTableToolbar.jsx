@@ -66,7 +66,7 @@ const styles = theme => ({
 });
 
 /**
- * Create React Component for Custom Table Toolbar
+ * Custom Table Toolbar
  */
 function CustomTableToolbar(props) {
     const {
@@ -79,7 +79,7 @@ function CustomTableToolbar(props) {
         >
             <div className={classes.title}>
                 <Typography variant='h6' id='tableTitle'>
-                    <FormattedMessage id='widget.heading' defaultMessage='APPLICATION API USAGE' />
+                    <FormattedMessage id='widget.heading' defaultMessage='TOP APPLICATION USERS' />
                 </Typography>
             </div>
             <div className={classes.actions}>
@@ -95,7 +95,7 @@ function CustomTableToolbar(props) {
                 </Tooltip>
             </div>
             <Collapse in={expanded} timeout='auto' unmountOnExit className={classes.collapsef}>
-                <div style={{display: 'flex'}}>
+                <div style={{ display: 'flex' }}>
                     <TextField
                         id='column-select'
                         select
@@ -106,14 +106,11 @@ function CustomTableToolbar(props) {
                         margin='normal'
                         fullWidth
                     >
-                        <MenuItem value='apiName'>
-                            <FormattedMessage id='table.heading.apiName' defaultMessage='API NAME' />
+                        <MenuItem value='username'>
+                            <FormattedMessage id='table.heading.username' defaultMessage='USERNAME' />
                         </MenuItem>
-                        <MenuItem value='version'>
-                            <FormattedMessage id='table.heading.version' defaultMessage='VERSION' />
-                        </MenuItem>
-                        <MenuItem value='usage'>
-                            <FormattedMessage id='table.heading.usage' defaultMessage='USAGE' />
+                        <MenuItem value='hits'>
+                            <FormattedMessage id='table.heading.hits' defaultMessage='HITS' />
                         </MenuItem>
                     </TextField>
                     <TextField

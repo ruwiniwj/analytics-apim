@@ -1,5 +1,5 @@
 {
-    "name": "apim-application-api-usage",
+    "name": "apim-top-app-users",
     "version": "1.0.0",
     "private": true,
     "dependencies": {

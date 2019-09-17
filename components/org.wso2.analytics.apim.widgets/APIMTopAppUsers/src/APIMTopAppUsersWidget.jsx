@@ -29,7 +29,7 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Widget from '@wso2-dashboards/widget';
 
-import APIMApplicationApiUsage from './APIMApplicationApiUsage';
+import APIMTopAppUsers from './APIMTopAppUsers';
 
 const darkTheme = createMuiTheme({
     palette: {
@@ -53,7 +53,7 @@ const lightTheme = createMuiTheme({
  * Query string parameter
  * @type {string}
  */
-const queryParamKey = 'appApiUsage';
+const queryParamKey = 'topAppUsers';
 
 /**
  * Language
@@ -86,16 +86,11 @@ function sortFunction(a, b) {
 }
 
 /**
- * Create React Component for APIM Application Api Usage widget
- * @class APIMApplicationApiUsageWidget
+ * Widget for top application users
+ * @class APIMTopAppUsersWidget
  * @extends {Widget}
  */
-class APIMApplicationApiUsageWidget extends Widget {
-    /**
-     * Creates an instance of APIMApplicationApiUsageWidget.
-     * @param {any} props @inheritDoc
-     * @memberof APIMApplicationApiUsageWidget
-     */
+class APIMTopAppUsersWidget extends Widget {
     constructor(props) {
         super(props);
         this.styles = {
@@ -124,13 +119,13 @@ class APIMApplicationApiUsageWidget extends Widget {
             width: this.props.width,
             height: this.props.height,
             limit: 5,
-            applicationList: null,
+            applicationList: [],
             applicationSelected: null,
-            usageData: null,
-            legendData: null,
+            usageData: [],
+            legendData: [],
             localeMessages: null,
             inProgress: false,
-            refreshAppListInterval: 60000,
+            refreshAppListInterval: 1800000, // 30 mins
         };
 
         // This will re-size the widget when the glContainer's width is changed.
@@ -141,13 +136,13 @@ class APIMApplicationApiUsageWidget extends Widget {
             }));
         }
 
-        this.handleDataReceived = this.handleDataReceived.bind(this);
-        this.handleAppDataReceived = this.handleAppDataReceived.bind(this);
         this.handlePublisherParameters = this.handlePublisherParameters.bind(this);
         this.applicationSelectedHandleChange = this.applicationSelectedHandleChange.bind(this);
         this.handleLimitChange = this.handleLimitChange.bind(this);
-        this.assembleMainQuery = this.assembleMainQuery.bind(this);
         this.assembleAppQuery = this.assembleAppQuery.bind(this);
+        this.handleAppDataReceived = this.handleAppDataReceived.bind(this);
+        this.assembleMainQuery = this.assembleMainQuery.bind(this);
+        this.handleDataReceived = this.handleDataReceived.bind(this);
         this.loadLocale = this.loadLocale.bind(this);
     }
 
@@ -186,10 +181,10 @@ class APIMApplicationApiUsageWidget extends Widget {
      * Load locale file.
      *
      * @param {string} locale Locale name
-     * @memberof APIMApplicationApiUsageWidget
+     * @memberof APIMTopAppUsersWidget
      */
     loadLocale(locale) {
-        Axios.get(`${window.contextPath}/public/extensions/widgets/APIMApplicationApiUsage/locales/${locale}.json`)
+        Axios.get(`${window.contextPath}/public/extensions/widgets/APIMTopAppUsers/locales/${locale}.json`)
             .then((response) => {
                 this.setState({ localeMessages: defineMessages(response.data) });
             })
@@ -200,7 +195,7 @@ class APIMApplicationApiUsageWidget extends Widget {
      * Retrieve params from publisher - DateTimeRange
      *
      * @param receivedMsg  message received from subscribed widgets
-     * @memberof APIMApplicationApiUsageWidget
+     * @memberof APIMTopAppUsersWidget
      * */
     handlePublisherParameters(receivedMsg) {
         this.setState({
@@ -212,48 +207,23 @@ class APIMApplicationApiUsageWidget extends Widget {
     }
 
     /**
-     * Formats the siddhi query - apiUsageQuery
-     * @memberof APIMApplicationApiUsageWidget
-     * */
-    assembleMainQuery() {
-        const {
-            timeFrom, timeTo, perValue, providerConfig,
-        } = this.state;
-        const queryParam = super.getGlobalState(queryParamKey);
-        const { applicationSelected, limit } = queryParam;
-        const { id } = this.props;
-        const dataProviderConfigs = cloneDeep(providerConfig);
-        let query = dataProviderConfigs.configs.config.queryData.apiUsageQuery;
-
-        query = query
-            .replace('{{applicationId}}', applicationSelected)
-            .replace('{{from}}', timeFrom)
-            .replace('{{to}}', timeTo)
-            .replace('{{per}}', perValue)
-            .replace('{{limit}}', limit);
-        dataProviderConfigs.configs.config.queryData.query = query;
-        super.getWidgetChannelManager().subscribeWidget(id, this.handleDataReceived, dataProviderConfigs);
-    }
-
-    /**
-     * Formats the siddhi query - applicationQuery
-     * @memberof APIMApplicationApiUsageWidget
+     * Retrieve applications of the subscriber
+     * @memberof APIMTopAppUsersWidget
      * */
     assembleAppQuery() {
         const { providerConfig } = this.state;
         const { id } = this.props;
         const dataProviderConfigs = cloneDeep(providerConfig);
         let query = dataProviderConfigs.configs.config.queryData.applicationQuery;
-        const currentUser = super.getCurrentUser();
-        let userName = currentUser.username;
+        let { username } = super.getCurrentUser();
 
         // if email username is enabled, then super tenants will be saved with '@carbon.super' suffix, else, they
         // are saved without tenant suffix
-        if (userName.split('@').length === 2) {
-            userName = userName.replace('@carbon.super', '');
+        if (username.split('@').length === 2) {
+            username = username.replace('@carbon.super', '');
         }
 
-        query = query.replace('{{appOwner}}', userName);
+        query = query.replace('{{appOwner}}', username);
         dataProviderConfigs.configs.config.queryData.query = query;
         super.getWidgetChannelManager().subscribeWidget(id, this.handleAppDataReceived, dataProviderConfigs);
     }
@@ -261,7 +231,7 @@ class APIMApplicationApiUsageWidget extends Widget {
     /**
      * Formats data retrieved from assembleAppQuery
      * @param {object} message - data retrieved
-     * @memberof APIMApplicationApiUsageWidget
+     * @memberof APIMTopAppUsersWidget
      * */
     handleAppDataReceived(message) {
         const { data } = message;
@@ -270,6 +240,7 @@ class APIMApplicationApiUsageWidget extends Widget {
         if (data) {
             const queryParam = super.getGlobalState(queryParamKey);
             let { applicationSelected, limit } = queryParam;
+
             if (!limit) {
                 limit = 5;
             }
@@ -281,7 +252,8 @@ class APIMApplicationApiUsageWidget extends Widget {
             });
             applicationList.sort(sortFunction);
 
-            if (!applicationSelected || !data.some(application => application.appId === applicationSelected)) {
+            if (!applicationSelected
+                    || !applicationList.some(application => application.appId === applicationSelected)) {
                 if (applicationList.length > 0) {
                     applicationSelected = applicationList[0].appId;
                 }
@@ -293,9 +265,36 @@ class APIMApplicationApiUsageWidget extends Widget {
     }
 
     /**
+     * Retrieve top application users for selected application
+     * @memberof APIMTopAppUsersWidget
+     * */
+    assembleMainQuery() {
+        const {
+            timeFrom, timeTo, perValue, providerConfig,
+        } = this.state;
+        const queryParam = super.getGlobalState(queryParamKey);
+        const { applicationSelected, limit } = queryParam;
+
+        if (applicationSelected && limit) {
+            const { id } = this.props;
+            const dataProviderConfigs = cloneDeep(providerConfig);
+            let query = dataProviderConfigs.configs.config.queryData.appUsageQuery;
+
+            query = query
+                .replace('{{applicationId}}', applicationSelected)
+                .replace('{{from}}', timeFrom)
+                .replace('{{to}}', timeTo)
+                .replace('{{per}}', perValue)
+                .replace('{{limit}}', limit);
+            dataProviderConfigs.configs.config.queryData.query = query;
+            super.getWidgetChannelManager().subscribeWidget(id, this.handleDataReceived, dataProviderConfigs);
+        }
+    }
+
+    /**
      * Formats data retrieved from assembleMainQuery
      * @param {object} message - data retrieved
-     * @memberof APIMApplicationApiUsageWidget
+     * @memberof APIMTopAppUsersWidget
      * */
     handleDataReceived(message) {
         const { data } = message;
@@ -303,14 +302,12 @@ class APIMApplicationApiUsageWidget extends Widget {
         if (data) {
             const usageData = data.map((dataUnit) => {
                 return {
-                    apiName: dataUnit[0],
-                    version: dataUnit[1],
-                    apiCreator: dataUnit[2],
-                    usage: dataUnit[3],
+                    username: dataUnit[0],
+                    hits: dataUnit[1],
                 };
             });
             const legendData = usageData.map((dataUnit) => {
-                return { name: dataUnit.apiName };
+                return { name: dataUnit.username };
             });
             this.setState({ usageData, legendData, inProgress: false });
         }
@@ -318,9 +315,9 @@ class APIMApplicationApiUsageWidget extends Widget {
 
     /**
      * Updates query param values
-     * @param {string} applicationSelected - API Name menu option selected
+     * @param {string} applicationSelected - selected application
      * @param {number} limit - data limitation value
-     * @memberof APIMApplicationApiUsageWidget
+     * @memberof APIMTopAppUsersWidget
      * */
     setQueryParam(applicationSelected, limit) {
         super.setGlobalState(queryParamKey, {
@@ -330,44 +327,50 @@ class APIMApplicationApiUsageWidget extends Widget {
     }
 
     /**
-     * Handle Limit select Change
+     * Handle onChange of limit
      * @param {Event} event - listened event
-     * @memberof APIMApplicationApiUsageWidget
+     * @memberof APIMTopAppUsersWidget
      * */
     handleLimitChange(event) {
         const { id } = this.props;
         const { applicationSelected } = this.state;
+        // disallow negative and decimal values
+        const limit = (event.target.value).replace('-', '').split('.')[0];
 
-        this.setQueryParam(applicationSelected, parseInt(event.target.value));
-        if (event.target.value) {
-            this.setState({ inProgress: true, limit: event.target.value });
+        this.setQueryParam(applicationSelected, parseInt(limit, 10));
+        if (limit) {
+            this.setState({ inProgress: true, limit });
             super.getWidgetChannelManager().unsubscribeWidget(id);
             this.assembleMainQuery();
         } else {
-            this.setState({ limit: event.target.value });
+            this.setState({ limit });
         }
     }
 
     /**
-     * Handle API name menu select change
+     * Handle onChange of  selected application
      * @param {Event} event - listened event
-     * @memberof APIMApplicationApiUsageWidget
+     * @memberof APIMTopAppUsersWidget
      * */
     applicationSelectedHandleChange(event) {
         this.setState({ inProgress: true });
-        const { limit } = this.state;
+        let { limit } = this.state;
         const { id } = this.props;
 
+        if (!limit) {
+            limit = 5;
+        }
+
         this.setQueryParam(event.target.value, limit);
-        this.setState({ applicationSelected: event.target.value });
+        this.setState({ applicationSelected: event.target.value, limit });
         super.getWidgetChannelManager().unsubscribeWidget(id);
         this.assembleMainQuery();
     }
 
     /**
      * @inheritDoc
-     * @returns {ReactElement} Render the APIM Application Usage widget
-     * @memberof APIMApplicationApiUsageWidget
+     * @returns {ReactElement} Render the APIM Top Application Users widget
+     * @memberof APIMTopAppUsersWidget
      */
     render() {
         const {
@@ -379,7 +382,7 @@ class APIMApplicationApiUsageWidget extends Widget {
         } = this.styles;
         const { muiTheme } = this.props;
         const themeName = muiTheme.name;
-        const apiUsersProps = {
+        const appUsersProps = {
             themeName,
             height,
             width,
@@ -423,14 +426,14 @@ class APIMApplicationApiUsageWidget extends Widget {
                                         <FormattedMessage
                                             id='config.error.body'
                                             defaultMessage={'Cannot fetch provider configuration for APIM'
-                                            + ' Application Usage widget'}
+                                            + ' Top Application Users'}
                                         />
                                     </Typography>
                                 </Paper>
                             </div>
                         ) : (
-                            <APIMApplicationApiUsage
-                                {...apiUsersProps}
+                            <APIMTopAppUsers
+                                {...appUsersProps}
                                 applicationSelectedHandleChange={this.applicationSelectedHandleChange}
                                 handleLimitChange={this.handleLimitChange}
                             />
@@ -442,4 +445,4 @@ class APIMApplicationApiUsageWidget extends Widget {
     }
 }
 
-global.dashboard.registerWidget('APIMApplicationApiUsage', APIMApplicationApiUsageWidget);
+global.dashboard.registerWidget('APIMTopAppUsers', APIMTopAppUsersWidget);

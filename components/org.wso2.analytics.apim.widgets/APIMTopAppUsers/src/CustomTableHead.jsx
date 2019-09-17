@@ -28,18 +28,15 @@ import Tooltip from '@material-ui/core/Tooltip';
 
 const rows = [
     {
-        id: 'apiName', numeric: false, disablePadding: false, label: 'table.heading.apiName',
+        id: 'username', numeric: false, disablePadding: false, label: 'table.heading.username',
     },
     {
-        id: 'version', numeric: false, disablePadding: false, label: 'table.heading.version',
-    },
-    {
-        id: 'usage', numeric: true, disablePadding: false, label: 'table.heading.usage',
+        id: 'hits', numeric: true, disablePadding: false, label: 'table.heading.hits',
     },
 ];
 
 /**
- * Create React Component for Custom Table Head
+ * Table column headers
  */
 export default class CustomTableHead extends React.Component {
     createSortHandler = property => (event) => {

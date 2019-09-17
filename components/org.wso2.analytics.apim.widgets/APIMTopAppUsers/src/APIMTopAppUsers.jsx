@@ -35,11 +35,11 @@ import { VictoryPie, VictoryLegend, VictoryTooltip } from 'victory';
 import CustomTable from './CustomTable';
 
 /**
- * React Component for Application Api Usage  widget body
+ * Widget to display top application users
  * @param {any} props @inheritDoc
- * @returns {ReactElement} Render the Application Api Usage  widget body
+ * @returns {ReactElement} Render the Top App Users  widget body
  */
-export default function APIMApplicationApiUsage(props) {
+export default function APIMTopAppUsers(props) {
     const {
         themeName, height, width, limit, applicationSelected, usageData, legendData, applicationList,
         applicationSelectedHandleChange, handleLimitChange, inProgress,
@@ -100,23 +100,42 @@ export default function APIMApplicationApiUsage(props) {
         tableDiv: {
             width: width > 1000 ? '50%' : '100%',
         },
+        h3: {
+            borderBottom: themeName === 'dark' ? '1px solid #fff' : '1px solid #02212f',
+            paddingBottom: '10px',
+            margin: 'auto',
+            marginTop: 0,
+            textAlign: 'left',
+            fontWeight: 'normal',
+            letterSpacing: 1.5,
+        },
+        flyoutStyle: {
+            fill: '#000',
+            fillOpacity: '0.5',
+            strokeWidth: 1,
+        },
+        victoryTooltip: {
+            fill: '#fff',
+            fontSize: 25,
+        },
+        rowGutter: {
+            top: 0,
+            bottom: -10,
+        },
+        victoryLegend: {
+            labels: {
+                fill: '#9e9e9e',
+                fontSize: 25,
+            },
+        },
     };
 
     return (
         <Scrollbars style={{ height }}>
             <div style={{ padding: '5% 5%' }}>
                 <div style={styles.headingWrapper}>
-                    <h3 style={{
-                        borderBottom: themeName === 'dark' ? '1px solid #fff' : '1px solid #02212f',
-                        paddingBottom: '10px',
-                        margin: 'auto',
-                        marginTop: 0,
-                        textAlign: 'left',
-                        fontWeight: 'normal',
-                        letterSpacing: 1.5,
-                    }}
-                    >
-                        <FormattedMessage id='widget.heading' defaultMessage='Application API Usage' />
+                    <h3 style={styles.h3}>
+                        <FormattedMessage id='widget.heading' defaultMessage='TOP APPLICATION USERS' />
                     </h3>
                 </div>
                 <div style={styles.formWrapper}>
@@ -179,27 +198,21 @@ export default function APIMApplicationApiUsage(props) {
                                                     orientation='right'
                                                     pointerLength={0}
                                                     cornerRadius={2}
-                                                    flyoutStyle={{
-                                                        fill: '#000',
-                                                        fillOpacity: '0.5',
-                                                        strokeWidth: 1,
-                                                    }}
-                                                    style={{ fill: '#fff', fontSize: 25 }}
+                                                    flyoutStyle={styles.flyoutStyle}
+                                                    style={styles.victoryTooltip}
                                                 />
                                             )}
                                             width={500}
                                             height={500}
                                             standalone={false}
-                                            padding={{
-                                                left: 50, bottom: 50, top: 50, right: 50,
-                                            }}
+                                            padding={50}
                                             colorScale={['#385dbd', '#030d8a', '#59057b', '#ab0e86', '#e01171',
                                                 '#ffe2ff']}
                                             data={usageData}
-                                            x={d => d.apiName}
-                                            y={d => d.usage}
-                                            labels={d => `${d.apiName} : ${((d.usage
-                                                / (sumBy(usageData, o => o.usage))) * 100).toFixed(2)}%`}
+                                            x={d => d.username}
+                                            y={d => d.hits}
+                                            labels={d => `${d.username} : ${((d.hits
+                                                / (sumBy(usageData, o => o.hits))) * 100).toFixed(2)}%`}
                                         />
                                         <VictoryLegend
                                             standalone={false}
@@ -208,13 +221,8 @@ export default function APIMApplicationApiUsage(props) {
                                             x={500}
                                             y={20}
                                             gutter={20}
-                                            rowGutter={{ top: 0, bottom: -10 }}
-                                            style={{
-                                                labels: {
-                                                    fill: '#9e9e9e',
-                                                    fontSize: 25,
-                                                },
-                                            }}
+                                            rowGutter={styles.rowGutter}
+                                            style={styles.victoryLegend}
                                             data={legendData}
                                         />
                                     </svg>
@@ -255,12 +263,12 @@ export default function APIMApplicationApiUsage(props) {
     );
 }
 
-APIMApplicationApiUsage.propTypes = {
+APIMTopAppUsers.propTypes = {
     themeName: PropTypes.string.isRequired,
-    height: PropTypes.string.isRequired,
-    width: PropTypes.string.isRequired,
+    height: PropTypes.number.isRequired,
+    width: PropTypes.number.isRequired,
     limit: PropTypes.string.isRequired,
-    applicationSelected: PropTypes.string.isRequired,
+    applicationSelected: PropTypes.number.isRequired,
     applicationList: PropTypes.instanceOf(Object).isRequired,
     usageData: PropTypes.instanceOf(Object).isRequired,
     legendData: PropTypes.string.isRequired,

@@ -889,7 +889,7 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.analytics.apim</groupId>
-                <artifactId>org.wso2.analytics.apim.widgets.apim.application.api.usage
+                <artifactId>org.wso2.analytics.apim.widgets.apim.top.app.users
                 </artifactId>
                 <version>${project.version}</version>
                 <type>zip</type>

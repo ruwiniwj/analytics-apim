@@ -148,14 +148,9 @@ const styles = theme => ({
 });
 
 /**
- * Create React Component for Application Api Usage  Table
+ * Table for Top Application Users
  */
 class CustomTable extends React.Component {
-    /**
-     * Creates an instance of CustomTable.
-     * @param {any} props @inheritDoc
-     * @memberof CustomTable
-     */
     constructor(props) {
         super(props);
 
@@ -165,7 +160,7 @@ class CustomTable extends React.Component {
             orderBy: 'hits',
             order: 'desc',
             expanded: false,
-            filterColumn: 'apiName',
+            filterColumn: 'username',
             filterQuery: '',
             emptyRowHeight: 49,
         };
@@ -201,7 +196,7 @@ class CustomTable extends React.Component {
     };
 
     /**
-     * Render the Application Api Usage  table
+     * Render the Top App Users  table
      * @return {ReactElement} customTable
      */
     render() {
@@ -237,9 +232,8 @@ class CustomTable extends React.Component {
                                     <div className={classes.tableWrapper}>
                                         <Table className={classes.table} aria-labelledby='tableTitle'>
                                             <colgroup>
-                                                <col style={{ width: '40%' }} />
-                                                <col style={{ width: '30%' }} />
-                                                <col style={{ width: '30%' }} />
+                                                <col style={{ width: '50%' }} />
+                                                <col style={{ width: '50%' }} />
                                             </colgroup>
                                             <CustomTableHead
                                                 order={order}
@@ -254,16 +248,12 @@ class CustomTable extends React.Component {
                                                             <TableRow
                                                                 hover
                                                                 tabIndex={-1}
-                                                                key={n.id}
                                                             >
                                                                 <TableCell component='th' scope='row'>
-                                                                    {n.apiName + ' (' + n.apiCreator + ')'}
-                                                                </TableCell>
-                                                                <TableCell component='th' scope='row'>
-                                                                    {n.version}
+                                                                    {n.username}
                                                                 </TableCell>
                                                                 <TableCell component='th' scope='row' numeric>
-                                                                    {n.usage}
+                                                                    {n.hits}
                                                                 </TableCell>
                                                             </TableRow>
                                                         );
@@ -271,7 +261,7 @@ class CustomTable extends React.Component {
                                                 {
                                                     emptyRows > 0 && (
                                                         <TableRow style={{ height: emptyRowHeight * emptyRows }}>
-                                                            <TableCell colSpan={3} />
+                                                            <TableCell colSpan={2} />
                                                         </TableRow>
                                                     )
                                                 }
@@ -280,7 +270,7 @@ class CustomTable extends React.Component {
                                                 <TableRow>
                                                     <TablePagination
                                                         rowsPerPageOptions={[5, 10, 20, 25, 50, 100]}
-                                                        colSpan={3}
+                                                        colSpan={2}
                                                         count={tableData.length}
                                                         rowsPerPage={rowsPerPage}
                                                         page={page}
