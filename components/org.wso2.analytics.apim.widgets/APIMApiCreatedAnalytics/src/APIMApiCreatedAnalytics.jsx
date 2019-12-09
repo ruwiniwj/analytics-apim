@@ -40,22 +40,23 @@ export default function APIMApiCreatedAnalytics(props) {
     } = props;
     const styles = {
         headingWrapper: {
-            height: '10%',
             margin: 'auto',
-            width: '97%',
+            width: '95%',
         },
         formWrapper: {
-            width: '97%',
-            height: '10%',
+            width: '90%',
+            height: '15%',
             margin: 'auto',
-            marginTop: '2%',
         },
         form: {
+            width: '30%',
+            marginLeft: '5%',
+            marginTop: '5%',
             display: 'flex',
             flexWrap: 'wrap',
         },
         formControl: {
-            margin: 5,
+            // margin: 5,
             minWidth: 120,
         },
         selectEmpty: {
@@ -85,17 +86,16 @@ export default function APIMApiCreatedAnalytics(props) {
             <div
                 style={{
                     backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
-                    width: '85%',
                     height,
-                    margin: '5% auto',
-                    padding: '10% 5%',
+                    margin: '15px',
+                    padding: '25px',
                 }}
             >
                 <div style={styles.headingWrapper}>
                     <div style={{
                         borderBottom: themeName === 'dark' ? '1px solid #fff' : '1px solid #02212f',
-                        width: '40%',
-                        paddingBottom: '15px',
+                        paddingBottom: '10px',
+                        margin: 'auto',
                         textAlign: 'left',
                         fontWeight: 'normal',
                         letterSpacing: 1.5,

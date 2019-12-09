@@ -44,7 +44,7 @@ export default function APIMAppCreatedAnalytics(props) {
         headingWrapper: {
             height: '10%',
             margin: 'auto',
-            width: '97%',
+            // width: '97%',
         },
         formWrapper: {
             width: '97%',
@@ -88,17 +88,17 @@ export default function APIMAppCreatedAnalytics(props) {
         <Scrollbars style={{ height }}>
             <div
                 style={{
-                    background: themeName === 'dark' ? '#0e1e33' : '#fff',
-                    width: '85%',
-                    padding: '5% 5%',
-                    margin: '1.5% auto',
+                    backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
+                    height,
+                    margin: '15px',
+                    padding: '25px',
                 }}
             >
                 <div style={styles.headingWrapper}>
                     <div style={{
                         borderBottom: themeName === 'dark' ? '1px solid #fff' : '1px solid #02212f',
-                        width: '40%',
-                        paddingBottom: '15px',
+                        paddingBottom: '10px',
+                        margin: 'auto',
                         textAlign: 'left',
                         fontWeight: 'normal',
                         letterSpacing: 1.5,

@@ -39,7 +39,7 @@ export default function APIMApiAvailability(props) {
         headingWrapper: {
             height: '10%',
             margin: 'auto',
-            width: '90%',
+            width: '95%',
         },
         dataWrapper: {
             height: '75%',

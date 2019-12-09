@@ -60,7 +60,7 @@ export default function APIMTopApiCreators(props) {
     const styles = {
         headingWrapper: {
             margin: 'auto',
-            width: '90%',
+            width: '95%',
         },
         paperWrapper: {
             height: '75%',

@@ -73,7 +73,11 @@ export default function APIMAppResourceUsage(props) {
             width: '90%',
         },
         div: {
-            padding: '5% 5%',
+            backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
+            width: '85%',
+            height,
+            margin: '5% auto',
+            padding: '5%',
         },
         h3: {
             borderBottom: themeName === 'dark' ? '1px solid #fff' : '1px solid #02212f',
@@ -88,10 +92,11 @@ export default function APIMAppResourceUsage(props) {
             height: '75%',
         },
         paper: {
-            background: '#969696',
+            background: themeName === 'dark' ? '#969696' : '#E8E8E8',
+            borderColor: themeName === 'dark' ? '#fff' : '#D8D8D8',
             width: '75%',
             padding: '4%',
-            border: '1.5px solid #fff',
+            border: '1.5px solid',
             margin: 'auto',
             marginTop: '5%',
         },

@@ -60,7 +60,7 @@ export default function APIMTopSubscribers(props) {
     const styles = {
         headingWrapper: {
             margin: 'auto',
-            width: '90%',
+            width: '95%',
         },
         paperWrapper: {
             height: '75%',
@@ -72,6 +72,7 @@ export default function APIMTopSubscribers(props) {
             padding: '4%',
             border: '1.5px solid',
             margin: 'auto',
+            marginTop: '5%',
         },
         formWrapper: {
             width: '90%',

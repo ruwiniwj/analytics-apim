@@ -80,10 +80,11 @@ export default function APIMApiLatency(props) {
             height: '75%',
         },
         paper: {
-            background: '#969696',
+            background: themeName === 'dark' ? '#969696' : '#E8E8E8',
+            borderColor: themeName === 'dark' ? '#fff' : '#D8D8D8',
             width: '75%',
             padding: '4%',
-            border: '1.5px solid #fff',
+            border: '1.5px solid',
             margin: 'auto',
             marginTop: '5%',
         },
@@ -115,7 +116,11 @@ export default function APIMApiLatency(props) {
         >
             <div
                 style={{
-                    padding: '5% 5%',
+                    backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
+                    width: '85%',
+                    height,
+                    margin: '5% auto',
+                    padding: '10% 5%',
                 }}
             >
                 <div style={styles.headingWrapper}>

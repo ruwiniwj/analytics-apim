@@ -60,10 +60,11 @@ export default function APIMSignupsAnalytics(props) {
         >
             <div
                 style={{
-                    background: themeName === 'dark' ? '#0e1e33' : '#fff',
+                    backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
                     width: '85%',
-                    padding: '5% 5%',
-                    margin: '1.5% auto',
+                    height,
+                    margin: '5% auto',
+                    padding: '5%',
                 }}
             >
                 <div style={styles.headingWrapper}>

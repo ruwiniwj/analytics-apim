@@ -67,10 +67,11 @@ export default function APIMTopThrottledApis(props) {
             height: '75%',
         },
         paper: {
-            background: '#969696',
+            background: themeName === 'dark' ? '#969696' : '#E8E8E8',
+            borderColor: themeName === 'dark' ? '#fff' : '#D8D8D8',
             width: '75%',
             padding: '4%',
-            border: '1.5px solid #fff',
+            border: '1.5px solid',
             margin: 'auto',
             marginTop: '5%',
         },
@@ -112,9 +113,10 @@ export default function APIMTopThrottledApis(props) {
             >
                 <div style={{
                     backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
-                    width: '80%',
+                    width: '85%',
+                    height,
                     margin: '5% auto',
-                    padding: '10% 5%',
+                    padding: '5%',
                 }}
                 >
                     <div style={styles.headingWrapper}>
