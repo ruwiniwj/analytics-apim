@@ -51,10 +51,11 @@ export default function APIMApiAvailability(props) {
             height: '75%',
         },
         paper: {
-            background: '#969696',
+            background: themeName === 'dark' ? '#969696' : '#E8E8E8',
+            borderColor: themeName === 'dark' ? '#fff' : '#D8D8D8',
             width: '75%',
             padding: '4%',
-            border: '1.5px solid #fff',
+            border: '1.5px solid',
             margin: 'auto',
             marginTop: '5%',
         },
@@ -68,17 +69,17 @@ export default function APIMApiAvailability(props) {
             justifyContent: 'center',
             height,
         },
-        divWrapper: {
-            width: '90%',
-            height: '10%',
-            margin: 'auto',
-        },
     };
     const availabilityProps = { availableApiData, legendData };
 
     return (
         <Scrollbars style={{ height }}>
-            <div style={{ padding: '5% 5%' }}>
+            <div style={{
+                backgroundColor: themeName === 'dark' ? '#0e1e33' : '#fff',
+                height,
+                margin: '15px',
+                padding: '25px',
+            }}>
                 <div style={styles.headingWrapper}>
                     <h3 style={{
                         borderBottom: themeName === 'dark' ? '1px solid #fff' : '1px solid #02212f',
