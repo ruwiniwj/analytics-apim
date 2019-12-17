@@ -299,7 +299,8 @@ class APIMOverallApiUsageWidget extends Widget {
                 return {
                     apiname: dataUnit[0],
                     provider: dataUnit[1],
-                    hits: dataUnit[2]
+                    hits: dataUnit[2],
+                    version: dataUnit[3]
                 }
             });
             this.setState({ usageData });
@@ -384,7 +385,7 @@ class APIMOverallApiUsageWidget extends Widget {
 
         if (data) {
             const apiIdMap = {};
-            data.map(api => { apiIdMap[api[0]]= { apiname: api[1], creator: api[2] }; });
+            data.map(api => { apiIdMap[api[0]]= { apiname: api[1], creator: api[2], version: api[3] }; });
             this.setState({ apiIdMap });
         }
         super.getWidgetChannelManager().unsubscribeWidget(id);
@@ -430,11 +431,12 @@ class APIMOverallApiUsageWidget extends Widget {
 
             const usageData1 = [];
             data.map(dataUnit => {
-                const { apiname, creator } = apiIdMap[dataUnit[0]];
-                const hits = usageData.filter(usage => usage.apiname === apiname && usage.provider === creator);
+                const { apiname, creator, version } = apiIdMap[dataUnit[0]];
+                const hits = usageData.filter(usage => usage.apiname === apiname && usage.provider === creator
+                    && usage.version === version);
 
                 if (hits.length > 0) {
-                    usageData1.push([hits[0].apiname, hits[0].provider, hits[0].hits, dataUnit[1]]);
+                    usageData1.push([hits[0].apiname, hits[0].provider, hits[0].hits, dataUnit[1], hits[0].version]);
                 }
             });
             this.setState({ usageData1, inProgress: false  });

@@ -193,16 +193,12 @@ class CustomTable extends React.Component {
      */
     render() {
         const { data, classes } = this.props;
-        let counter = 0;
-        // const formattedData = [];
-        let apiname = '';
-        let hits = 0;
         const {
             query, expanded, filterColumn, order, orderBy, rowsPerPage, page,
         } = this.state;
 
         const formattedData = data.map((dataUnit) => {
-            return { apiname: dataUnit[0] + ' (' + dataUnit[1] + ')', hits: dataUnit[2] };
+            return { apiname: dataUnit[0] + ' (' + dataUnit[1] + ')', apiVersion: dataUnit[4], hits: dataUnit[2] };
         });
 
         this.state.tableData = query
@@ -214,6 +210,9 @@ class CustomTable extends React.Component {
         const menuItems = [
             <MenuItem value='apiname'>
                 <FormattedMessage id='table.heading.apiname' defaultMessage='API NAME' />
+            </MenuItem>,
+            <MenuItem value='apiVersion'>
+                <FormattedMessage id='table.heading.apiVersion' defaultMessage='API VERSION' />
             </MenuItem>,
             <MenuItem value='hits'>
                 <FormattedMessage id='table.heading.hits' defaultMessage='HITS' />
@@ -249,6 +248,9 @@ class CustomTable extends React.Component {
                                         >
                                             <TableCell component='th' scope='row'>
                                                 {n.apiname}
+                                            </TableCell>
+                                            <TableCell component='th' scope='row' numeric>
+                                                {n.apiVersion}
                                             </TableCell>
                                             <TableCell numeric>
                                                 {n.hits}

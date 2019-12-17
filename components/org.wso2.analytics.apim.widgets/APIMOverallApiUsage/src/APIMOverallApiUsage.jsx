@@ -104,6 +104,12 @@ export default function APIMOverallApiUsage(props) {
         },
     };
 
+    let chartData =[];
+
+    if (usageData1) {
+        chartData = usageData1.map(data => {return [data[0] + ' (' + data[4] + ')', data[1], data[2], data[3]]})
+    }
+
     return (
         <Scrollbars style={{ height: '100%' }}>
             <div style={{ padding: '5% 5%' }}>
@@ -189,7 +195,7 @@ export default function APIMOverallApiUsage(props) {
                                             <VizG
                                                 config={chartConfig}
                                                 metadata={metadata}
-                                                data={usageData1}
+                                                data={chartData}
                                                 width={width}
                                                 theme={themeName}
                                             />
