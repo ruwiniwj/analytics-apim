@@ -56,10 +56,10 @@ function CustomFormGroup(props) {
             <div>
                 { viewType === ViewTypeEnum.APP ? (
                     <FormControl className={classes.formControl}>
-                        <InputLabel id='demo-simple-select-label'>Application</InputLabel>
+                        <InputLabel>
+                            <FormattedMessage id='label.app' defaultMessage='Application' />
+                        </InputLabel>
                         <Select
-                            labelId='demo-simple-select-label'
-                            id='demo-simple-select'
                             value={selectedApp}
                             onChange={handleApplicationChange}
                         >
@@ -74,10 +74,10 @@ function CustomFormGroup(props) {
                 ) : '' }
 
                 <FormControl className={classes.formControl}>
-                    <InputLabel id='demo-simple-select-label'>API Name</InputLabel>
+                    <InputLabel>
+                        <FormattedMessage id='label.apiName' defaultMessage='API Name' />
+                    </InputLabel>
                     <Select
-                        labelId='demo-simple-select-label'
-                        id='demo-simple-select'
                         value={selectedAPI}
                         onChange={handleAPIChange}
                     >
@@ -90,10 +90,10 @@ function CustomFormGroup(props) {
 
                 { drillDownType === DrillDownEnum.VERSION || drillDownType === DrillDownEnum.RESOURCE ? (
                     <FormControl className={classes.formControl}>
-                        <InputLabel id='demo-simple-select-label'>API Version</InputLabel>
+                        <InputLabel>
+                            <FormattedMessage id='label.apiVersion' defaultMessage='API Version' />
+                        </InputLabel>
                         <Select
-                            labelId='demo-simple-select-label'
-                            id='demo-simple-select'
                             value={selectedVersion}
                             onChange={handleVersionChange}
                             disabled={versionList && versionList.length === 0}
@@ -108,10 +108,10 @@ function CustomFormGroup(props) {
 
                 { drillDownType === DrillDownEnum.RESOURCE ? (
                     <FormControl className={classes.formControl}>
-                        <InputLabel id='demo-simple-select-label'>Operation</InputLabel>
+                        <InputLabel>
+                            <FormattedMessage id='label.operation' defaultMessage='Operation' />
+                        </InputLabel>
                         <Select
-                            labelId='demo-simple-select-label'
-                            id='demo-simple-select'
                             value={selectedResource}
                             onChange={handleOperationChange}
                             disabled={operationList && operationList.length === 0}
@@ -129,7 +129,7 @@ function CustomFormGroup(props) {
                 <FormControl className={classes.formControl}>
                     <TextField
                         id='limit-number'
-                        label={<FormattedMessage id='limit' defaultMessage='Limit :' />}
+                        label={<FormattedMessage id='limit' defaultMessage='Limit' />}
                         value={selectedLimit}
                         onChange={handleLimitChange}
                         type='number'

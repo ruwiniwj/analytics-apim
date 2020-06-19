@@ -104,7 +104,13 @@ function renderData(props) {
             background: themeName === 'dark' ? '#152638' : '#E8E8E8',
             padding: '4%',
         },
-    }
+        paperWrapper: {
+            height: '75%',
+            paddingTop: 35,
+            margin: 'auto',
+            width: '90%',
+        },
+    };
     if (loading) {
         return (
             <div style={classes.loading}>
@@ -115,7 +121,7 @@ function renderData(props) {
 
     if (data.length === 0) {
         return (
-            <div style={classes.paperWrapper}>
+            <div style={localClass.paperWrapper}>
                 <Paper
                     elevation={1}
                     style={localClass.paper}
@@ -173,14 +179,14 @@ function renderData(props) {
                     <div style={classes.dataWrapper}>
                         <div style={classes.leftContainer}>
                             <FormattedMessage
-                                id='sub.heading.error.count'
+                                id='error.count'
                                 defaultMessage='No of Errors'
                             />
                             <div style={classes.dataBlock}>{totalErrors}</div>
                         </div>
                         <div style={classes.rightContainer}>
                             <FormattedMessage
-                                id='sub.heading.error.percentage'
+                                id='error.percentage'
                                 defaultMessage='Error Percentage'
                             />
                             <div style={classes.dataBlock}>

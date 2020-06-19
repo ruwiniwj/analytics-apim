@@ -18,6 +18,7 @@
  */
 
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -51,20 +52,42 @@ class ResourceViewErrorTable extends React.Component {
     }
 
     getTableHeadRowsForAPI() {
-        const { viewType, valueFormatType, data, handleDrillDownClick, classes } = this.props;
+        const {
+            viewType, valueFormatType, data, handleDrillDownClick, classes,
+        } = this.props;
         return (
             <Table className={styles.table} aria-label='simple table'>
                 <TableHead>
                     <TableRow>
-                        { viewType === ViewTypeEnum.APP ? <TableCell>Application</TableCell> : '' }
-                        <TableCell align='right'>Operation</TableCell>
-                        <TableCell align='right'>4xx</TableCell>
-                        <TableCell align='right'>5xx</TableCell>
-                        <TableCell align='right'>Total Errors</TableCell>
-                        <TableCell align='right'>Total Faulty</TableCell>
-                        <TableCell align='right'>Total Throttled</TableCell>
-                        <TableCell align='right'>Total Success</TableCell>
-                        <TableCell align='right'>Total Requests</TableCell>
+                        { viewType === ViewTypeEnum.APP ? (
+                            <TableCell>
+                                <FormattedMessage id='table.column.app' defaultMessage='Application' />
+                            </TableCell>
+                        ) : '' }
+                        <TableCell align='right'>
+                            <FormattedMessage id='table.column.operation' defaultMessage='Operation' />
+                        </TableCell>
+                        <TableCell align='right'>
+                            <FormattedMessage id='table.column.4xx' defaultMessage='4xx' />
+                        </TableCell>
+                        <TableCell align='right'>
+                            <FormattedMessage id='table.column.5xx' defaultMessage='5xx' />
+                        </TableCell>
+                        <TableCell align='right'>
+                            <FormattedMessage id='table.column.totalErrors' defaultMessage='Total Errors' />
+                        </TableCell>
+                        <TableCell align='right'>
+                            <FormattedMessage id='table.column.totalFaulty' defaultMessage='Total Faulty' />
+                        </TableCell>
+                        <TableCell align='right'>
+                            <FormattedMessage id='table.column.totalThrottled' defaultMessage='Total Throttled' />
+                        </TableCell>
+                        <TableCell align='right'>
+                            <FormattedMessage id='table.column.totalSuccess' defaultMessage='Total Success' />
+                        </TableCell>
+                        <TableCell align='right'>
+                            <FormattedMessage id='table.column.totalRequests' defaultMessage='Total Requests' />
+                        </TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -92,7 +115,7 @@ class ResourceViewErrorTable extends React.Component {
                                 hover
                                 key={{ apiResourceTemplate, apiMethod }}
                                 onClick={() => handleDrillDownClick({
-                                    applicationName, applicationOwner, apiResourceTemplate, apiMethod
+                                    applicationName, applicationOwner, apiResourceTemplate, apiMethod,
                                 })}
                                 className={classes.hover}
                             >
