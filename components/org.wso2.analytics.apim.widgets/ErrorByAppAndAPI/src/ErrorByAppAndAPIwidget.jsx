@@ -101,14 +101,13 @@ class ErrorByAppAndAPIwidget extends Widget {
                 backgroundColor: '#0e1e33',
                 padding: '20px',
             },
-            h3: {
-                borderBottom: '1px solid #fff',
-                paddingBottom: '10px',
+            heading: {
                 margin: 'auto',
-                marginTop: 0,
-                textAlign: 'left',
+                textAlign: 'center',
                 fontWeight: 'normal',
                 letterSpacing: 1.5,
+                paddingBottom: '10px',
+                marginTop: 0,
             },
             headingWrapper: {
                 margin: 'auto',
@@ -124,10 +123,6 @@ class ErrorByAppAndAPIwidget extends Widget {
                 marginBottom: '50px',
                 fontWeight: 'bold',
                 letterSpacing: 1.5,
-            },
-            content: {
-                marginTop: '20px',
-                textAlign: 'center',
             },
         };
 
@@ -642,10 +637,10 @@ class ErrorByAppAndAPIwidget extends Widget {
                 >
                     <div style={this.styles.mainDiv}>
                         <div style={this.styles.headingWrapper}>
-                            <h3 style={this.styles.h3}>
+                            <h3 style={this.styles.heading}>
                                 <FormattedMessage
-                                    id='widget.heading.top.error.summary'
-                                    defaultMessage='Top Error Summary'
+                                    id='widget.heading'
+                                    defaultMessage='TOP ERROR SUMMARY'
                                 />
                             </h3>
                             <ErrorsSummaryChart
