@@ -79,9 +79,9 @@ class APILatencySummaryWidget extends Widget {
             localeMessages: null,
             loading: true,
 
-            selectedAPI: -1,
-            selectedVersion: -1,
-            selectedResource: -1,
+            selectedAPI: 'All',
+            selectedVersion: 'All',
+            selectedResource: 'All',
             selectedLimit: 5,
             data: [],
 
@@ -255,6 +255,7 @@ class APILatencySummaryWidget extends Widget {
             return obj;
         });
         if (data.length !== 0) {
+            newData.unshift({API_NAME: 'All'});
             this.setState({ apiList: newData }, this.versionLoadCallBack);
         } else {
             this.setState({ apiList: [] });
@@ -272,9 +273,10 @@ class APILatencySummaryWidget extends Widget {
         });
 
         if (data.length !== 0) {
-            this.setState({ versionList: newData, selectedResource: -1 });
+            newData.unshift({API_VERSION: 'All', API_ID: 'All'});
+            this.setState({ versionList: newData, selectedResource: 'All' });
         } else {
-            this.setState({ versionList: [], selectedResource: -1 });
+            this.setState({ versionList: [], selectedResource: 'All' });
         }
     }
 
@@ -289,6 +291,7 @@ class APILatencySummaryWidget extends Widget {
         });
 
         if (data.length !== 0) {
+            newData.unshift({URL_PATTERN: 'All', HTTP_METHOD: 'All', URL_MAPPING_ID: 'All'});
             this.setState({ operationList: newData });
         } else {
             this.setState({ operationList: [] });
@@ -361,10 +364,10 @@ class APILatencySummaryWidget extends Widget {
         const groupByPhase = [];
         const filterPhase = [];
 
-        if (selectedAPI !== -1) {
+        if (selectedAPI !== 'All') {
             filterPhase.push('apiName==\'' + selectedAPI + '\'');
         }
-        if (selectedVersion > -1) {
+        if (selectedVersion !== 'All') {
             const api = versionList.find(i => i.API_ID === selectedVersion);
             filterPhase.push('apiVersion==\'' + api.API_VERSION + '\'');
         }
@@ -378,7 +381,7 @@ class APILatencySummaryWidget extends Widget {
                 filterPhase.push('apiMethod==\'' + firstOp.HTTP_METHOD + '\'');
             }
         } else {
-            if (selectedResource > -1) {
+            if (selectedResource !== 'All') {
                 const operation = operationList.find(i => i.URL_MAPPING_ID === selectedResource);
                 filterPhase.push('apiResourceTemplate==\'' + operation.URL_PATTERN + '\'');
                 filterPhase.push('apiMethod==\'' + operation.HTTP_METHOD + '\'');
@@ -405,7 +408,7 @@ class APILatencySummaryWidget extends Widget {
     handleAPIChange(data) {
         let selectedAPI;
         if (data == null) {
-            selectedAPI = -1;
+            selectedAPI = 'All';
         } else {
             const { value } = data;
             selectedAPI = value;
@@ -415,15 +418,15 @@ class APILatencySummaryWidget extends Widget {
             selectedAPI,
             versionList: [],
             operationList: [],
-            selectedVersion: -1,
-            selectedResource: -1,
+            selectedVersion: 'All',
+            selectedResource: 'All',
         }, this.loadingDrillDownData);
     }
 
     handleVersionChange(data) {
         let selectedVersion;
         if (data == null) {
-            selectedVersion = -1;
+            selectedVersion = 'All';
         } else {
             const { value } = data;
             selectedVersion = value;
@@ -435,7 +438,7 @@ class APILatencySummaryWidget extends Widget {
         }
         this.setState({
             selectedVersion,
-            selectedResource: -1,
+            selectedResource: 'All',
             operationList: [],
         }, this.loadingDrillDownData);
     }
@@ -443,7 +446,7 @@ class APILatencySummaryWidget extends Widget {
     handleOperationChange(data) {
         let selectedResource;
         if (data == null) {
-            selectedResource = -1;
+            selectedResource = 'All';
         } else {
             const { value } = data;
             selectedResource = value;
@@ -456,7 +459,7 @@ class APILatencySummaryWidget extends Widget {
     handleGraphQLOperationChange(data) {
         let selectedResource;
         if (data == null || data.length === 0) {
-            selectedResource = -1;
+            selectedResource = 'All';
         } else {
             const ids = data.map(row => row.value);
             selectedResource = ids;
