@@ -81,9 +81,9 @@ class APITrafficSummaryWidget extends Widget {
             localeMessages: null,
             loading: true,
 
-            selectedAPI: -1,
-            selectedVersion: -1,
-            selectedResource: -1,
+            selectedAPI: 'All',
+            selectedVersion: 'All',
+            selectedResource: 'All',
             selectedLimit: 10,
             drillDownType: 'api',
             data: [],
@@ -258,12 +258,13 @@ class APITrafficSummaryWidget extends Widget {
         });
 
         if (data.length !== 0) {
+            newData.unshift({API_NAME: 'All'});
             this.setState({
                 apiList: newData,
             });
         } else {
             this.setState({
-                apiList: [], selectedVersion: -1, selectedResource: -1,
+                apiList: [], selectedVersion: 'All', selectedResource: 'All',
             });
         }
     }
@@ -279,9 +280,10 @@ class APITrafficSummaryWidget extends Widget {
         });
 
         if (data.length !== 0) {
-            this.setState({ versionList: newData, selectedResource: -1 });
+            newData.unshift({API_VERSION: 'All', API_ID: 'All'});
+            this.setState({ versionList: newData, selectedResource: 'All' });
         } else {
-            this.setState({ versionList: [], selectedResource: -1 });
+            this.setState({ versionList: [], selectedResource: 'All' });
         }
     }
 
@@ -296,6 +298,7 @@ class APITrafficSummaryWidget extends Widget {
         });
 
         if (data.length !== 0) {
+            newData.unshift({URL_PATTERN: 'All', HTTP_METHOD: 'All', URL_MAPPING_ID: 'All'});
             this.setState({ operationList: newData });
         } else {
             this.setState({ operationList: [] });
@@ -359,9 +362,9 @@ class APITrafficSummaryWidget extends Widget {
             {
                 drillDownType: event.target.value,
                 data: [],
-                selectedAPI: -1,
-                selectedVersion: -1,
-                selectedResource: -1,
+                selectedAPI: 'All',
+                selectedVersion: 'All',
+                selectedResource: 'All',
                 versionList: [],
                 operationList: [],
             }, this.loadingDrillDownData,
@@ -392,10 +395,10 @@ class APITrafficSummaryWidget extends Widget {
             groupByPhase.push('apiName', 'apiResourceTemplate', 'apiVersion');
         }
 
-        if (selectedAPI !== -1) {
+        if (selectedAPI !== 'All') {
             filterPhase.push('apiName==\'' + selectedAPI + '\'');
         }
-        if (selectedVersion !== -1) {
+        if (selectedVersion !== 'All') {
             const api = versionList.find(i => i.API_ID === selectedVersion);
             filterPhase.push('apiVersion==\'' + api.API_VERSION + '\'');
         }
@@ -410,7 +413,7 @@ class APITrafficSummaryWidget extends Widget {
                 filterPhase.push('apiResourceTemplate==\'' + opsString + '\'');
                 filterPhase.push('apiMethod==\'' + firstOp.HTTP_METHOD + '\'');
             }
-        } else if (selectedResource > -1) {
+        } else if (selectedResource !== 'All') {
             const operation = operationList.find(i => i.URL_MAPPING_ID === selectedResource);
             filterPhase.push('apiResourceTemplate==\'' + operation.URL_PATTERN + '\'');
             filterPhase.push('apiMethod==\'' + operation.HTTP_METHOD + '\'');
@@ -429,7 +432,7 @@ class APITrafficSummaryWidget extends Widget {
     handleAPIChange(data) {
         let selectedAPI;
         if (data == null) {
-            selectedAPI = -1;
+            selectedAPI = 'All';
         } else {
             const { value } = data;
             selectedAPI = value;
@@ -442,15 +445,15 @@ class APITrafficSummaryWidget extends Widget {
             selectedAPI,
             versionList: [],
             operationList: [],
-            selectedVersion: -1,
-            selectedResource: -1,
+            selectedVersion: 'All',
+            selectedResource: 'All',
         }, this.loadingDrillDownData);
     }
 
     handleVersionChange(data) {
         let selectedVersion;
         if (data == null) {
-            selectedVersion = -1;
+            selectedVersion = 'All';
         } else {
             const { value } = data;
             selectedVersion = value;
@@ -464,7 +467,7 @@ class APITrafficSummaryWidget extends Widget {
         }
         this.setState({
             selectedVersion,
-            selectedResource: -1,
+            selectedResource: 'All',
             operationList: [],
         }, this.loadingDrillDownData);
     }
@@ -473,7 +476,7 @@ class APITrafficSummaryWidget extends Widget {
         let selectedResource;
         if (!event) {
             // handle clear dropdown
-            selectedResource = -1;
+            selectedResource = 'All';
         } else {
             const { value } = event;
             selectedResource = value;
@@ -484,7 +487,7 @@ class APITrafficSummaryWidget extends Widget {
     handleGraphQLOperationChange(data) {
         let selectedResource;
         if (data == null || data.length === 0) {
-            selectedResource = -1;
+            selectedResource = 'All';
         } else {
             const ids = data.map(row => row.value);
             selectedResource = ids;
