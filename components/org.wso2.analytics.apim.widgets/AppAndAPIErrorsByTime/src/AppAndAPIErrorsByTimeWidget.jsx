@@ -456,8 +456,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
             filterPhase.push('apiVersion==\'' + api.API_VERSION + '\'');
         }
         if (Array.isArray(selectedResource)) {
-            if (selectedResource.length > 0 && operationList.length > 0
-                && selectedResource[0].URL_MAPPING_ID !== 'All') {
+            if (selectedResource.length > 0 && operationList.length > 0 && selectedResource[0] !== 'All') {
                 const opsString = selectedResource
                     .map(id => operationList.find(i => i.URL_MAPPING_ID === id))
                     .map(d => d.URL_PATTERN)
