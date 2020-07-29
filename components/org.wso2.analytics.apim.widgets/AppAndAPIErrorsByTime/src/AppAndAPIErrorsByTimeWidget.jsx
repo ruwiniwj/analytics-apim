@@ -56,6 +56,8 @@ const lightTheme = createMuiTheme({
     },
 });
 
+const GRAPHQL_TYPE= 'GRAPHQL';
+
 /**
  * Language
  * @type {string}
@@ -90,10 +92,10 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
             valueFormatType: ValueFormatType.PERCENT,
             drillDownType: DrillDownEnum.API,
 
-            selectedAPI: -1,
-            selectedApp: -1,
-            selectedVersion: -1,
-            selectedResource: -1,
+            selectedAPI: 'All',
+            selectedApp: 'All',
+            selectedVersion: 'All',
+            selectedResource: 'All',
             selectedLimit: 60,
             data: [],
 
@@ -310,6 +312,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
         });
 
         if (data.length !== 0) {
+            newData.unshift({ NAME: 'All', CREATED_BY: 'All', APPLICATION_ID: 'All' });
             this.setState({ appList: newData });
         } else {
             this.setState({ appList: [] });
@@ -326,6 +329,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
             return obj;
         });
         if (data.length !== 0) {
+            newData.unshift({ API_NAME: 'All' });
             this.setState({ apiList: newData }, this.loadingDrillDownData);
         } else {
             this.setState({ apiList: [] });
@@ -343,6 +347,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
         });
 
         if (data.length !== 0) {
+            newData.unshift({ API_VERSION: 'All', API_ID: 'All' });
             this.setState({ versionList: newData, operationList: [] }, this.loadingDrillDownData);
         } else {
             this.setState({ versionList: [], operationList: [] });
@@ -360,6 +365,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
         });
 
         if (data.length !== 0) {
+            newData.unshift({ URL_PATTERN: 'All', HTTP_METHOD: 'All', URL_MAPPING_ID: 'All' });
             this.setState({ operationList: newData }, this.loadingDrillDownData);
         } else {
             this.setState({ operationList: [] });
@@ -442,15 +448,16 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
         const groupByPhase = [];
         const filterPhase = [];
 
-        if (selectedAPI !== -1) {
+        if (selectedAPI !== 'All') {
             filterPhase.push('apiName==\'' + selectedAPI + '\'');
         }
-        if (versionList.length > 0 && selectedVersion !== -1) {
+        if (versionList.length > 0 && selectedVersion !== 'All') {
             const api = versionList.find(i => i.API_ID === selectedVersion);
             filterPhase.push('apiVersion==\'' + api.API_VERSION + '\'');
         }
         if (Array.isArray(selectedResource)) {
-            if (selectedResource.length > 0 && operationList.length > 0) {
+            if (selectedResource.length > 0 && operationList.length > 0
+                && selectedResource[0].URL_MAPPING_ID !== 'All') {
                 const opsString = selectedResource
                     .map(id => operationList.find(i => i.URL_MAPPING_ID === id))
                     .map(d => d.URL_PATTERN)
@@ -461,13 +468,13 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
                 filterPhase.push('apiMethod==\'' + firstOp.HTTP_METHOD + '\'');
             }
         } else {
-            if (selectedResource > -1 && operationList.length > 0) {
+            if (selectedResource !== 'All' && operationList.length > 0) {
                 const operation = operationList.find(i => i.URL_MAPPING_ID === selectedResource);
                 filterPhase.push('apiResourceTemplate==\'' + operation.URL_PATTERN + '\'');
                 filterPhase.push('apiMethod==\'' + operation.HTTP_METHOD + '\'');
             }
         }
-        if (selectedApp !== -1) {
+        if (selectedApp !== 'All') {
             const app = appList.find(d => d.APPLICATION_ID === selectedApp);
             filterPhase.push('applicationName==\'' + app.NAME + '\'');
             filterPhase.push('applicationOwner==\'' + app.CREATED_BY + '\'');
@@ -487,7 +494,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
     handleApplicationChange(data) {
         let selectedApp;
         if (data == null) {
-            selectedApp = -1;
+            selectedApp = 'All';
         } else {
             const { value } = data;
             selectedApp = value;
@@ -500,7 +507,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
     handleAPIChange(data) {
         let selectedAPI;
         if (data == null) {
-            selectedAPI = -1;
+            selectedAPI = 'All';
         } else {
             const { value } = data;
             selectedAPI = value;
@@ -510,27 +517,31 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
             selectedAPI,
             versionList: [],
             operationList: [],
-            selectedVersion: -1,
-            selectedResource: -1,
+            selectedVersion: 'All',
+            selectedResource: 'All',
         }, this.loadingDrillDownData);
     }
 
     handleVersionChange(data) {
+        let selectedResource = 'All';
         let selectedVersion;
         if (data == null) {
-            selectedVersion = -1;
+            selectedVersion = 'All';
         } else {
             const { value } = data;
             selectedVersion = value;
             const { versionList } = this.state;
             const selectedAPI = versionList.find(item => item.API_ID === selectedVersion);
-            if (selectedVersion && selectedAPI.API_TYPE !== 'WS') {
+            if (selectedVersion && selectedAPI.API_TYPE !== 'WS' && selectedVersion !== 'All') {
                 this.loadOperations(selectedVersion, selectedAPI.API_TYPE);
+                if (selectedAPI.API_TYPE === GRAPHQL_TYPE) {
+                    selectedResource = ['All'];
+                }
             }
         }
         this.setState({
             selectedVersion,
-            selectedResource: -1,
+            selectedResource,
             operationList: [],
         }, this.loadingDrillDownData);
     }
@@ -538,7 +549,7 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
     handleOperationChange(data) {
         let selectedResource;
         if (data == null) {
-            selectedResource = -1;
+            selectedResource = 'All';
         } else {
             const { value } = data;
             selectedResource = value;
@@ -551,10 +562,17 @@ class AppAndAPIErrorsByTimeWidget extends Widget {
     handleGraphQLOperationChange(data) {
         let selectedResource;
         if (data == null || data.length === 0) {
-            selectedResource = -1;
+            selectedResource = 'All';
         } else {
             const ids = data.map(row => row.value);
             selectedResource = ids;
+            if (selectedResource.length > 1) {
+                if (selectedResource[0] === 'All') {
+                    selectedResource = selectedResource.splice(1);
+                } else if (selectedResource[selectedResource.length - 1] === 'All') {
+                    selectedResource = selectedResource.splice(selectedResource.length - 1);
+                }
+            }
         }
         this.setState({
             selectedResource,

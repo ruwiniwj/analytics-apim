@@ -60,6 +60,9 @@ const styles = theme => ({
         flexDirection: 'column',
         verticalAlign: 'top',
     },
+    formDiv: {
+        paddingTop: 10,
+    },
 });
 
 function CustomFormGroup(props) {
@@ -72,7 +75,7 @@ function CustomFormGroup(props) {
     const graphQL = operationList.length > 0 && !!operationList.find(op => graphQLOps.includes(op.HTTP_METHOD));
     return (
         <div component={Paper}>
-            <div>
+            <div className={classes.formDiv}>
                 <FormControl className={classes.newFormControl}>
                     <IntegrationReactSelect
                         options={appList}
